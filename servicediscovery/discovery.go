@@ -194,7 +194,7 @@ func (d *Discovery) Start(parent context.Context) error {
 	return nil
 }
 
-func (d *Discovery) GetInstances() *Discovery {
+func GetInstances() *Discovery {
 	singletonMu.Lock()
 	defer singletonMu.Unlock()
 	return singleton
