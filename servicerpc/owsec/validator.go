@@ -79,3 +79,21 @@ func (s *SecurityClient) ValidateToken(ctx context.Context, rawToken string) err
 func isInvalidTokenStatus(status int) bool {
 	return status == http.StatusUnauthorized || status == http.StatusForbidden || status == http.StatusNotFound
 }
+
+func (v *Validator) ValidateAPIKey(ctx context.Context, apiKey string) error {
+	apiKey = strings.TrimSpace(apiKey)
+
+	resp, err := v.deps.Send(ctx, fiber.MethodGet, "/api/v1/validateAPIKey?apiKey="+url.QueryEscape(apiKey), nil, serviceName)
+	if resp != nil {
+		defer resp.Close()
+	}
+
+	if err == nil && resp != nil && resp.StatusCode() == fiber.StatusOK {
+		return nil
+	}
+
+	err = apperrors.New(apperrors.CodeUnauthorized, "")
+	info := apperrors.InfoOf(err)
+	return apperrors.Wrap(apperrors.CodeUnauthorized, info.Description, err)
+
+}
