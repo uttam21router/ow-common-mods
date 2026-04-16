@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/gofiber/fiber"
 	"github.com/routerarchitects/ow-common-mods/servicerpc/common"
 	"github.com/routerarchitects/ra-common-mods/apperror"
 )
@@ -80,7 +81,7 @@ func isInvalidTokenStatus(status int) bool {
 	return status == http.StatusUnauthorized || status == http.StatusForbidden || status == http.StatusNotFound
 }
 
-func (v *Validator) ValidateAPIKey(ctx context.Context, apiKey string) error {
+func (v *SecurityClient) ValidateAPIKey(ctx context.Context, apiKey string) error {
 	apiKey = strings.TrimSpace(apiKey)
 
 	resp, err := v.deps.Send(ctx, fiber.MethodGet, "/api/v1/validateAPIKey?apiKey="+url.QueryEscape(apiKey), nil, serviceName)
@@ -92,8 +93,6 @@ func (v *Validator) ValidateAPIKey(ctx context.Context, apiKey string) error {
 		return nil
 	}
 
-	err = apperrors.New(apperrors.CodeUnauthorized, "")
-	info := apperrors.InfoOf(err)
-	return apperrors.Wrap(apperrors.CodeUnauthorized, info.Description, err)
+	return apperror.Wrap(apperror.CodeUnauthorized, "unauthorized", err)
 
 }
