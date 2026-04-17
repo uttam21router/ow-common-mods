@@ -24,6 +24,7 @@ type InternalAPIKeyConfig struct {
 	// InternalNameHeader is the header used to identify internal callers.
 	// Defaults to X-INTERNAL-NAME.
 	InternalNameHeader string
+
 	// APIKeyHeader is the header that carries the caller's API key.
 	// Defaults to X-API-KEY.
 	APIKeyHeader string
