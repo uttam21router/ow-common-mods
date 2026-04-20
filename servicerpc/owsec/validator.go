@@ -96,3 +96,17 @@ func (v *SecurityClient) ValidateAPIKey(ctx context.Context, apiKey string) erro
 	return apperror.Wrap(apperror.CodeUnauthorized, "unauthorized", err)
 
 }
+
+func (s *SecurityClient) ValidateAPIKey(ctx context.Context, apiKey string) error {
+	resp, err := s.deps.Send(ctx, http.MethodGet, "/api/v1/validateAPIKey?apiKey="+url.QueryEscape(apiKey), nil, serviceName)
+	if resp != nil {
+		defer resp.Close()
+	}
+
+	if err != nil || resp == nil || resp.StatusCode() != http.StatusOK {
+		s.deps.Logger().With("service", serviceName, "operation", "validateAPIKey").Error("validation request failed")
+		return apperror.Wrap(apperror.CodeUnauthorized, "unauthorized", err)
+	}
+
+	return nil
+}
